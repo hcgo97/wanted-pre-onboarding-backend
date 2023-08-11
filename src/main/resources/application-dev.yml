@@ -1,0 +1,32 @@
+spring.config.activate.on-profiles: dev
+
+spring:
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        default_batch_fetch_size: 100
+    generate-ddl: false
+    open-in-view: false
+
+# logging 설정
+logging:
+  level:
+    org.springframework: info
+    com.example.wpob: debug
+  file:
+    name: /app/logs/dev.log # 로그파일 위치
+
+# spring actuator 설정
+management:
+  endpoint:
+    health:
+      show-details: always  # 자세한 로깅
+    web:
+      base-path: /actuator
+      exposure:
+        include: health, info, conditions, mappings, metrics, beans, env, httptrace, loggers

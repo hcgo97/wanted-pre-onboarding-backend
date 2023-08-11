@@ -1,0 +1,22 @@
+server:
+  port: 8080
+
+spring:
+  profiles:
+    include: database
+
+  output:
+    ansi:
+      enabled: detect # 콘솔 로그 색상 출력
+
+  data:
+    web:
+      pageable:
+        one-indexed-parameters: true # 페이지 인덱스 1부터 시작
+
+api:
+  path:
+    default: /api/v1
+  jwt:
+    secret: ${JWT_SECRET}
+    expire: ${JWT_EXPIRE:600} # 기본값 10분
