@@ -1,0 +1,37 @@
+version: '3.8'
+
+volumes:
+  db-data:
+    external: false
+
+services:
+  mysql:
+    container_name: wanted_internship_mysql
+    image: mysql:8.0.25
+    platform: linux/amd64
+    ports:
+      - "3306:3306"
+    env_file: .env
+    environment:
+      MYSQL_DATABASE: wanted_internship
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      LANG: C.UTF-8
+      TZ: Asia/Seoul
+    volumes:
+      - db-data:/var/lib/mysql
+    command: --sql_mode=''
+    restart: always
+
+  api:
+    container_name: wanted_internship_api
+    depends_on:
+      - mysql
+    restart: always
+    ports:
+      - "8080:8080"
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SPRING_PROFILE: ${SPRING_PROFILE}
+    env_file: .env
