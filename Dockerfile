@@ -5,7 +5,6 @@ WORKDIR /app
 
 # spring profile 설정
 ARG SPRING_PROFILE
-ENV SPRING_PROFILE="-Dspring.profiles.active=${SPRING_PROFILE}"
 
 # local -> docker
 ARG BUILD_JAR=build/libs/*.jar
