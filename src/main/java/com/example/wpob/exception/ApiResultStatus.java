@@ -13,8 +13,11 @@ public enum ApiResultStatus {
     // 400 errors
     CLIENT_ERROR("40000", "잘못된 요청입니다.", HttpStatus.BAD_REQUEST),
 
-    // 401 errors
-    UNAUTHORIZED("40100", "허가되지 않는 접근입니다.", HttpStatus.UNAUTHORIZED),
+    // 토큰 관련
+    TOKEN_NOT_FOUND("E4011", "토큰을 찾을 수 없습니다.", HttpStatus.UNAUTHORIZED),
+    TOKEN_INVALID("E4012", "유효하지 않은 토큰입니다.", HttpStatus.UNAUTHORIZED),
+    TOKEN_DATE_EXPIRED("E4013", "토큰이 만료되었습니다. 보안을 위해 다시 로그인 해주세요.", HttpStatus.UNAUTHORIZED),
+    TOKEN_CREATED_FAILED("E9200", "토큰 생성 중 에러가 발생하였습니다. 다시 시도해 주세요.", HttpStatus.INTERNAL_SERVER_ERROR),
 
     // 403 errors
     FORBIDDEN("40300", "해당 권한은 호출이 불가합니다.", HttpStatus.FORBIDDEN),
