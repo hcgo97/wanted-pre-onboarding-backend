@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -107,6 +109,36 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * 422 에러 처리
+     *
+     * @param ex
+     * @return
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+        StringBuilder errorMessages = new StringBuilder();
+
+        for (FieldError fieldError : ex.getBindingResult().getFieldErrors()) {
+            errorMessages.append(fieldError.getField()).append(":");
+            errorMessages.append(fieldError.getDefaultMessage());
+            errorMessages.append(" ");
+        }
+
+        log.error("Method Argument Not Valid Exception={}", errorMessages.toString());
+        ex.printStackTrace();
+
+        ApiResponse errorResponse = ApiResponse.SetErrorStatus.builder()
+                .txid(txidGenerator.getTxid())
+                .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .message(errorMessages.toString())
+                .code(ApiResultStatus.INVALID_FORMAT.getCode())
+                .description(ApiResultStatus.INVALID_FORMAT.toString())
+                .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    /**
      * DB 관련 에러 처리
      *
      * @param ex
@@ -114,7 +146,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<ApiResponse> handleDataAccessException(DataAccessException ex) {
-        log.error("DataAccess Exception");
+        log.error("Data Access Exception");
         ex.printStackTrace();
 
         ApiResponse errorResponse = ApiResponse.SetErrorStatus.builder()
