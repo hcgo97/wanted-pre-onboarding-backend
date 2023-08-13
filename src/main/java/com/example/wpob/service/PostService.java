@@ -26,7 +26,6 @@ public class PostService {
      */
     @Transactional
     public PostInfoDto createPost(PostEditDto inputDto, Users users) {
-
         // 1. 게시글 생성 및 저장
         Posts posts = Posts.create(users, inputDto.getTitle(), inputDto.getContents());
         postsRepository.save(posts);
@@ -40,7 +39,6 @@ public class PostService {
      */
     @Transactional(readOnly = true)
     public Page<PostInfoDto> showPostList(Pageable pageable) {
-
         // 1. 삭제되지 않은 게시글 목록 조회
         Page<Posts> posts = postsRepository.findByIsDeletedIsFalseOrderByCreatedAtDesc(pageable);
 
@@ -53,13 +51,41 @@ public class PostService {
      */
     @Transactional(readOnly = true)
     public PostInfoDto showPostDetail(Long postId) {
-
-        // 1. 삭제되지 않은 게시글 목록 조회
-        Posts posts = postsRepository.findByIdAndIsDeletedIsFalse(postId)
-                .orElseThrow(() -> new PostException(ApiResultStatus.POST_NOT_FOUND));
+        // 1. 삭제되지 않은 게시글인지 조회
+        Posts posts = getPost(postId);
 
         // 2. 게시글 정보 객체 return
         return PostInfoDto.convertPostDetail(posts);
+    }
+
+    /**
+     * 게시글 수정
+     */
+    @Transactional
+    public PostInfoDto editPost(Long postId, PostEditDto inputDto, Users users) {
+        // 1. 삭제되지 않은 게시글인지 조회
+        Posts posts = getPost(postId);
+
+        // 2. 게시글 권한 확인
+        checkPostAuth(posts, users);
+
+        // 3. 게시글 수정 및 저장
+        posts.update(inputDto.getTitle(), inputDto.getContents());
+        postsRepository.save(posts);
+
+        // 4. 게시글 정보 객체 return
+        return PostInfoDto.convertPostDetail(posts);
+    }
+
+    private Posts getPost(Long postId) {
+        return postsRepository.findByIdAndIsDeletedIsFalse(postId)
+                .orElseThrow(() -> new PostException(ApiResultStatus.POST_NOT_FOUND));
+    }
+
+    private void checkPostAuth(Posts posts, Users users) {
+        if (!posts.getUsers().getId().equals(users.getId())) {
+            throw new PostException(ApiResultStatus.NOT_MY_POST);
+        }
     }
 
 }

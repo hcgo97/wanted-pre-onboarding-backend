@@ -46,4 +46,14 @@ public class PostController extends BaseController {
         return responseBuilder(resultDto, HttpStatus.OK);
     }
 
+    /**
+     * 게시글 수정
+     */
+    @PutMapping("/{postId}")
+    public ResponseEntity<ApiResponse> editPost(@PathVariable Long postId,
+                                                @Validated @RequestBody PostEditDto inputDto) {
+        PostInfoDto resultDto = postService.editPost(postId, inputDto, getUsers());
+        return responseBuilder(resultDto, HttpStatus.OK);
+    }
+
 }
