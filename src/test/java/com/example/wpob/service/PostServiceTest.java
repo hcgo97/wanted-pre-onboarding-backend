@@ -2,7 +2,10 @@ package com.example.wpob.service;
 
 import com.example.wpob.dto.post.PostEditDto;
 import com.example.wpob.dto.post.PostInfoDto;
+import com.example.wpob.entity.Posts;
 import com.example.wpob.entity.Users;
+import com.example.wpob.exception.ApiResultStatus;
+import com.example.wpob.exception.PostException;
 import com.example.wpob.repository.PostsRepository;
 import com.example.wpob.repository.UsersRepository;
 import jakarta.validation.ConstraintViolation;
@@ -21,8 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("local")
@@ -53,23 +55,26 @@ class PostServiceTest {
     }
 
     // 유저 생성 후 리턴
-    Users before_create_users() {
+    Users create_users() {
         Users user = Users.create("test@a.com", "test1234");
         usersRepository.save(user);
 
         return user;
     }
 
-    // 게시글 작성
-    void create_post() {
-        Users users = before_create_users();
+    // 게시글 생성 후 리턴
+    Posts create_post() {
+        Users users = create_users();
 
         PostEditDto postEditDto = PostEditDto.builder()
                 .title("test title")
                 .contents("test contents")
                 .build();
 
-        postService.createPost(postEditDto, users);
+        Posts posts = Posts.create(users, "test title", "test contents");
+        postsRepository.save(posts);
+
+        return posts;
     }
 
     @Nested
@@ -130,7 +135,7 @@ class PostServiceTest {
         @Test
         @DisplayName("S01 - 게시글 작성 성공")
         void create_post_success_case1() {
-            Users users = before_create_users();
+            Users users = create_users();
 
             PostEditDto postEditDto = PostEditDto.builder()
                     .title("test title")
@@ -151,15 +156,13 @@ class PostServiceTest {
     @Transactional
     class show_post_list_test {
 
-        @BeforeEach
-        void before_create_post() {
-            create_post();
-        }
-
         @Test
         @DisplayName("S01 - 목록 조회 성공")
         void show_post_list_success_case1() {
-            Pageable pageable = PageRequest.of(0, 3); // 1페이지, 10개씩
+            // 게시글 생성
+            create_post();
+            // 1페이지, 3개씩
+            Pageable pageable = PageRequest.of(0, 3);
 
             assertDoesNotThrow(() -> {
                 // 게시글 목록 조회
@@ -167,6 +170,37 @@ class PostServiceTest {
                 // 게시글이 1개 이상인지 체크
                 assertTrue(postList.getContent().size() > 0);
             });
+        }
+    }
+
+    @Nested
+    @DisplayName("게시글 상세 조회 테스트")
+    @Transactional
+    class show_post_detail_test {
+        @Test
+        @DisplayName("S01 - 상세 조회 성공")
+        void show_post_detail_success_case1() {
+            // 게시글 생성
+            Posts posts = create_post();
+
+            assertDoesNotThrow(() -> {
+                // 게시글 상세 조회
+                PostInfoDto postDetail = postService.showPostDetail(posts.getId());
+            });
+        }
+
+        @Test
+        @DisplayName("E01 - 존재하지 않는 게시글")
+        void show_post_detail_failed_case1() {
+            // 게시글 생성
+            Posts posts = create_post();
+            // 존재하지 않는 게시글 id 지정
+            long notExistPostId = posts.getId() + 1;
+
+            // 게시글 상세 조회
+            assertThrows(PostException.class, () -> {
+                PostInfoDto postDetail = postService.showPostDetail(notExistPostId);
+            }, ApiResultStatus.POST_NOT_FOUND.getMessage());
         }
     }
 
