@@ -7,6 +7,8 @@ import com.example.wpob.entity.Users;
 import com.example.wpob.repository.PostsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +31,19 @@ public class PostService {
 
         // 2. 게시글 정보 객체 return
         return PostInfoDto.convertPostDetail(posts);
+    }
+
+    /**
+     * 게시글 목록 조회
+     */
+    @Transactional(readOnly = true)
+    public Page<PostInfoDto> showPostList(Pageable pageable) {
+
+        // 1. 삭제되지 않은 게시글 목록 조회
+        Page<Posts> posts = postsRepository.findByIsDeletedIsFalseOrderByCreatedAtDesc(pageable);
+
+        // 2. 게시글 목록 객체 return
+        return posts.map(PostInfoDto::convertPostList);
     }
 
 }
