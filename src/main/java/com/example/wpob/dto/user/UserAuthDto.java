@@ -1,6 +1,5 @@
 package com.example.wpob.dto.user;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -11,29 +10,23 @@ import java.util.Collection;
 
 @Getter
 @RequiredArgsConstructor
-@AllArgsConstructor
-public class UserTokenDto implements UserDetails {
+public class UserAuthDto implements UserDetails {
 
-    private String accessToken;
-    private UserInfoDto userInfoDto;
+    private String token;
+    private String userId; // users PK
+    private String email; // login id
 
     @Builder
-    public UserTokenDto(String accessToken, Long userId, String email) {
-        this.accessToken = accessToken;
-        this.userInfoDto = UserInfoDto.builder()
-                .id(userId)
-                .email(email)
-                .build();
-    }
-
-    public Long getUserId() {
-        // SecurityContextHolder.getContext().getAuthentication().getPrincipal()에서 사용
-        return this.userInfoDto.getId();
+    public UserAuthDto(String token, String userId, String email) {
+        this.token = token;
+        this.userId = userId;
+        this.email = email;
     }
 
     @Override
     public String getUsername() {
-        return this.userInfoDto.getEmail();
+        // SecurityContextHolder.getContext().getAuthentication().getPrincipal()에서 사용
+        return this.userId;
     }
 
     @Override

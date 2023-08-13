@@ -70,9 +70,9 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 
             if (jwtUtil.validateJwtToken(token)) {
                 // payload 파싱
-                UserTokenDto userInfo = UserTokenDto.builder()
-                        .accessToken(token)
-                        .userId(Long.valueOf(jwtUtil.getBodyValue(token, "userId").toString()))
+                UserAuthDto userInfo = UserAuthDto.builder()
+                        .token(token)
+                        .userId(jwtUtil.getBodyValue(token, "userId").toString())
                         .email(jwtUtil.getBodyValue(token, "email").toString())
                         .build();
 
