@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PostsRepository extends JpaRepository<Posts, Long> {
 
+    int countByUsers_IdAndIsDeletedIsFalse(Long userId);
+
 }
