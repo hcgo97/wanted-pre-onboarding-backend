@@ -77,11 +77,33 @@ public class PostService {
         return PostInfoDto.convertPostDetail(posts);
     }
 
+    /**
+     * 게시글 삭제
+     */
+    @Transactional
+    public PostInfoDto deletePost(Long postId, Users users) {
+        // 1. 삭제되지 않은 게시글인지 조회
+        Posts posts = getPost(postId);
+
+        // 2. 게시글 권한 확인
+        checkPostAuth(posts, users);
+
+        // 3. 게시글 삭제 및 저장
+        posts.delete();
+        postsRepository.save(posts);
+
+        // 4. 게시글 정보 객체 return
+        return PostInfoDto.convertPostDetail(posts);
+    }
+
+
+    // 삭제되지 않은 게시글인지 조회
     private Posts getPost(Long postId) {
         return postsRepository.findByIdAndIsDeletedIsFalse(postId)
                 .orElseThrow(() -> new PostException(ApiResultStatus.POST_NOT_FOUND));
     }
 
+    // 게시글 권한 확인
     private void checkPostAuth(Posts posts, Users users) {
         if (!posts.getUsers().getId().equals(users.getId())) {
             throw new PostException(ApiResultStatus.NOT_MY_POST);

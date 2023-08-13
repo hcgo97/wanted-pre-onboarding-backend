@@ -56,4 +56,13 @@ public class PostController extends BaseController {
         return responseBuilder(resultDto, HttpStatus.OK);
     }
 
+    /**
+     * 게시글 삭제
+     */
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<ApiResponse> deletePost(@PathVariable Long postId) {
+        PostInfoDto resultDto = postService.deletePost(postId, getUsers());
+        return responseBuilder(resultDto, HttpStatus.OK);
+    }
+
 }
