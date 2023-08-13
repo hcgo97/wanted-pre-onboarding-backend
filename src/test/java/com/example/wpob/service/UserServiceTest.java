@@ -50,7 +50,7 @@ class UserServiceTest {
     }
 
     @BeforeEach
-    void beforeJoin() {
+    void before_join() {
         // 테스트 전에 회원가입 하기
         UserSignDto userSignDto = UserSignDto.builder()
                 .email("test1@abc.com")
