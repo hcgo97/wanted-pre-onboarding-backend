@@ -1,5 +1,6 @@
 package com.example.wpob.dto.post;
 
+import com.example.wpob.entity.Posts;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,5 +30,18 @@ public class PostInfoDto {
     private Boolean isUpdated = false;
     private String title;
     private String contents;
+
+    // Posts -> PostInfoDto (상세 조회용)
+    public static PostInfoDto convertPostDetail(Posts posts) {
+        return PostInfoDto.builder()
+                .id(posts.getId())
+                .author(posts.getUsers().getEmail())
+                .createdAt(posts.getCreatedAt())
+                .updatedAt(posts.getUpdatedAt())
+                .isUpdated(posts.isUpdated())
+                .title(posts.getTitle())
+                .contents(posts.getContents())
+                .build();
+    }
 
 }

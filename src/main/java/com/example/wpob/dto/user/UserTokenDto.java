@@ -1,5 +1,6 @@
 package com.example.wpob.dto.user;
 
+import com.example.wpob.entity.Users;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,12 +18,9 @@ public class UserTokenDto {
     private UserInfoDto userInfo;
 
     @Builder
-    public UserTokenDto(String accessToken, Long userId, String email) {
+    public UserTokenDto(String accessToken, Users users) {
         this.accessToken = accessToken;
-        this.userInfo = UserInfoDto.builder()
-                .id(userId)
-                .email(email)
-                .build();
+        this.userInfo = UserInfoDto.convertUser(users);
     }
 
 }

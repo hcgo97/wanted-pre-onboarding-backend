@@ -41,10 +41,7 @@ public class UserService {
         usersRepository.save(users);
 
         // 4. 유저 정보 객체 return
-        return UserInfoDto.builder()
-                .id(users.getId())
-                .email(users.getEmail())
-                .build();
+        return UserInfoDto.convertUser(users);
     }
 
     /**
@@ -62,8 +59,7 @@ public class UserService {
         // 3. 토큰 & 유저 정보 객체 return
         return UserTokenDto.builder()
                 .accessToken(accessToken)
-                .userId(users.getId())
-                .email(users.getEmail())
+                .users(users)
                 .build();
     }
 

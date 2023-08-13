@@ -28,15 +28,7 @@ public class PostService {
         postsRepository.save(posts);
 
         // 2. 게시글 정보 객체 return
-        return PostInfoDto.builder()
-                .id(posts.getId())
-                .author(users.getEmail())
-                .createdAt(posts.getCreatedAt())
-                .updatedAt(posts.getUpdatedAt())
-                .isUpdated(false)
-                .title(posts.getTitle())
-                .contents(posts.getContents())
-                .build();
+        return PostInfoDto.convertPostDetail(posts);
     }
 
 }
