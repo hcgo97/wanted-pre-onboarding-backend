@@ -49,26 +49,31 @@ class UserServiceTest {
         factory.close();
     }
 
-
-    @Nested
-    @DisplayName("회원가입 테스트")
-    @Transactional
-    class join_test {
-        // 회원가입 DTO
+    @BeforeEach
+    void beforeJoin() {
+        // 테스트 전에 회원가입 하기
         UserSignDto userSignDto = UserSignDto.builder()
                 .email("test1@abc.com")
                 .password("test1234")
                 .build();
 
-        @BeforeEach
-        void setUp() {
-            // 회원가입 하기
-            userService.join(userSignDto);
-        }
+        userService.join(userSignDto);
+    }
+
+
+    @Nested
+    @DisplayName("회원가입 테스트")
+    @Transactional
+    class join_test {
 
         @Test
         @DisplayName("S01 - 회원가입 성공")
         void join_success_case1() {
+            UserSignDto userSignDto = UserSignDto.builder()
+                    .email("test1@abc.com")
+                    .password("test1234")
+                    .build();
+
             // 정상 가입 되었는지 조회
             assertTrue(usersRepository.findByEmailAndIsDeletedIsFalse(userSignDto.getEmail()).isPresent());
         }
@@ -76,6 +81,11 @@ class UserServiceTest {
         @Test
         @DisplayName("E01 - 이미 가입된 이메일")
         void join_failed_case1() {
+            UserSignDto userSignDto = UserSignDto.builder()
+                    .email("test1@abc.com")
+                    .password("test1234")
+                    .build();
+
             // 중복가입 되지 않는지 확인
             assertThrows(UserException.class, () -> {
                 userService.join(userSignDto);
@@ -121,4 +131,5 @@ class UserServiceTest {
             }, ApiResultStatus.LOGIN_FAILED.getMessage());
         }
     }
+
 }
