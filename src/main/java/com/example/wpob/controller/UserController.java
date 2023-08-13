@@ -30,4 +30,13 @@ public class UserController extends BaseController {
         return responseBuilder(resultDto, HttpStatus.CREATED);
     }
 
+    /**
+     * 로그인
+     */
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse> login(@Validated @RequestBody UserSignDto inputDto) {
+        UserTokenDto resultDto = userService.login(inputDto);
+        return responseBuilder(resultDto, HttpStatus.OK);
+    }
+
 }

@@ -7,6 +7,7 @@ import com.example.wpob.entity.Users;
 import com.example.wpob.exception.ApiResultStatus;
 import com.example.wpob.exception.UserException;
 import com.example.wpob.repository.UsersRepository;
+import com.example.wpob.util.JwtUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ public class UserService {
 
     private final UsersRepository usersRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     /**
      * 회원가입
@@ -41,6 +43,26 @@ public class UserService {
         // 4. 유저 정보 객체 return
         return UserInfoDto.builder()
                 .id(users.getId())
+                .email(users.getEmail())
+                .build();
+    }
+
+    /**
+     * 로그인
+     */
+    public UserTokenDto login(UserSignDto inputDto) {
+        // 1. 로그인 정보 확인
+        Users users = usersRepository.findByEmailAndIsDeletedIsFalse(inputDto.getEmail())
+                .filter(user -> passwordEncoder.matches(inputDto.getPassword(), user.getPassword()))
+                .orElseThrow(() -> new UserException(ApiResultStatus.LOGIN_FAILED)); // 비밀번호 틀렸으면 로그인 실패
+
+        // 2. 토큰 생성
+        String accessToken = jwtUtil.createToken(users.getId(), users.getEmail());
+
+        // 3. 토큰 & 유저 정보 객체 return
+        return UserTokenDto.builder()
+                .accessToken(accessToken)
+                .userId(users.getId())
                 .email(users.getEmail())
                 .build();
     }
