@@ -259,4 +259,58 @@ class PostServiceTest {
         }
     }
 
+    @Nested
+    @DisplayName("게시글 삭제 테스트")
+    @Transactional
+    class delete_post_test {
+        Users users;
+        Posts posts;
+
+        @BeforeEach
+        void setUp() {
+            users = create_users();
+            posts = create_post(users);
+        }
+
+        @Test
+        @DisplayName("S01 - 삭제 성공")
+        void delete_post_success_case1() {
+            assertDoesNotThrow(() -> {
+                // 게시글 삭제
+                postService.deletePost(posts.getId(), users);
+                // 삭제된 게시글이 정상적으로 조회되지 않는지 체크
+                assertTrue(postsRepository.findByIdAndIsDeletedIsFalse(posts.getId()).isEmpty());
+            });
+
+            // 방금 삭제한 게시글을 삭제 시도 할때 에러나는지 체크
+            assertThrows(PostException.class, () -> {
+                postService.deletePost(posts.getId(), users);
+            }, ApiResultStatus.POST_NOT_FOUND.getMessage());
+        }
+
+        @Test
+        @DisplayName("E01 - 존재하지 않는 게시글")
+        void delete_post_failed_case1() {
+            // 존재하지 않는 게시글 id 지정
+            long notExistPostId = posts.getId() + 1;
+
+            // 게시글 삭제 시도
+            assertThrows(PostException.class, () -> {
+                postService.deletePost(notExistPostId, users);
+            }, ApiResultStatus.POST_NOT_FOUND.getMessage());
+        }
+
+        @Test
+        @DisplayName("E02 - 자신의 게시글이 아님")
+        void delete_post_failed_case2() {
+            // 새로운 유저 생성
+            Users newUsers = Users.create("newuser@abc.com", "12345678");
+
+            // 게시글 삭제 시도
+            assertThrows(PostException.class, () -> {
+                postService.deletePost(posts.getId(), newUsers);
+            }, ApiResultStatus.NOT_MY_POST.getMessage());
+        }
+    }
+
 }
