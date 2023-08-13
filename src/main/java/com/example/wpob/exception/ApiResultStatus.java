@@ -22,9 +22,12 @@ public enum ApiResultStatus {
     TOKEN_DATE_EXPIRED("E4013", "토큰이 만료되었습니다. 보안을 위해 다시 로그인 해주세요.", HttpStatus.UNAUTHORIZED),
     TOKEN_CREATED_FAILED("E9200", "토큰 생성 중 에러가 발생하였습니다. 다시 시도해 주세요.", HttpStatus.INTERNAL_SERVER_ERROR),
 
-    // server error (90000~)
+    // 서버 에러
     INTERNAL_SERVER_ERROR("E9000", "서버에러가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
-    DATABASE_ACCESS_ERROR("E9100", "Database Access 중 에러가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+    DATABASE_ACCESS_ERROR("E9100", "Database Access 중 에러가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+
+    // 커스텀 에러
+    ALREADY_SIGNED_UP("E4090", "이미 가입된 이메일입니다.", HttpStatus.CONFLICT);
 
     private final String code;
     private final String message;
