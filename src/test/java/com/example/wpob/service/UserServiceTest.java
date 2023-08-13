@@ -60,6 +60,41 @@ class UserServiceTest {
         userService.join(userSignDto);
     }
 
+    @Nested
+    @DisplayName("파라미터 유효성 검증 테스트")
+    @Transactional
+    class validation_test {
+
+        @Test
+        @DisplayName("잘못된 이메일 형식")
+        void email_check() {
+            UserSignDto userSignDto = UserSignDto.builder()
+                    .email("abc1234.com")
+                    .build();
+
+            // 이메일 형식인지 체크
+            Set<ConstraintViolation<UserSignDto>> violations = validator.validate(userSignDto);
+            violations.forEach(error -> {
+                assertThat(error.getMessage()).isEqualTo("잘못된 이메일 형식입니다.");
+            });
+        }
+
+        @Test
+        @DisplayName("잘못된 비밀번호 형식")
+        void password_check() {
+            // 비밀번호를 7자리로 변경
+            UserSignDto userSignDto = UserSignDto.builder()
+                    .password("1234567")
+                    .build();
+
+            // 비밀번호가 8자리 이상인지 체크
+            Set<ConstraintViolation<UserSignDto>> violations = validator.validate(userSignDto);
+            violations.forEach(error -> {
+                assertThat(error.getMessage()).isEqualTo("비밀번호는 8자 이상 이어야 합니다.");
+            });
+        }
+    }
+
 
     @Nested
     @DisplayName("회원가입 테스트")
