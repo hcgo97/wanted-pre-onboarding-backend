@@ -70,6 +70,7 @@ class UserServiceTest {
         void email_check() {
             UserSignDto userSignDto = UserSignDto.builder()
                     .email("abc1234.com")
+                    .password("test1234")
                     .build();
 
             // 이메일 형식인지 체크
@@ -82,8 +83,8 @@ class UserServiceTest {
         @Test
         @DisplayName("잘못된 비밀번호 형식")
         void password_check() {
-            // 비밀번호를 7자리로 변경
             UserSignDto userSignDto = UserSignDto.builder()
+                    .email("abc@1234.com")
                     .password("1234567")
                     .build();
 
