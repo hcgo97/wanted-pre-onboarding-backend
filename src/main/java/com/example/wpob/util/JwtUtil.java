@@ -1,6 +1,5 @@
 package com.example.wpob.util;
 
-import com.example.wpob.dto.UserDto;
 import com.example.wpob.exception.ApiResultStatus;
 import com.example.wpob.exception.TokenException;
 import io.jsonwebtoken.*;
@@ -30,16 +29,15 @@ public class JwtUtil {
         VALIDITY_IN_HOURS = VALIDITY_IN_HOURS * 1000;
     }
 
-    public String createToken(UserDto.UserInfoDto userInfo) {
+    public String createToken(Long id, String email) {
         Claims claims = Jwts.claims();
 
         Date now = new Date();
         Date validity = null;
 
         try {
-            claims.put("uid", userInfo.getUid());
-            claims.put("email", userInfo.getEmail());
-
+            claims.put("id", id);
+            claims.put("email", email);
             validity = new Date(now.getTime() + VALIDITY_IN_HOURS);
 
             return Jwts.builder()

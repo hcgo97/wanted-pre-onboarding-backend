@@ -12,17 +12,28 @@ import java.util.Collection;
 @Getter
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Builder
 public class UserTokenDto implements UserDetails {
 
-    private String userId; // users PK
-    private String email; // login id
-    private String token;
+    private String accessToken;
+    private UserInfoDto userInfoDto;
+
+    @Builder
+    public UserTokenDto(String accessToken, Long userId, String email) {
+        this.accessToken = accessToken;
+        this.userInfoDto = UserInfoDto.builder()
+                .id(userId)
+                .email(email)
+                .build();
+    }
+
+    public Long getUserId() {
+        // SecurityContextHolder.getContext().getAuthentication().getPrincipal()에서 사용
+        return this.userInfoDto.getId();
+    }
 
     @Override
     public String getUsername() {
-        // SecurityContextHolder.getContext().getAuthentication().getPrincipal()에서 사용
-        return this.userId;
+        return this.userInfoDto.getEmail();
     }
 
     @Override

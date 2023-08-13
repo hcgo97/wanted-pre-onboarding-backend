@@ -49,7 +49,6 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 
         // 다음으로 끝나는 형식은 토큰검증x
         String[] endWith = {
-                "/downloads",
                 ".html", ".jpg", ".png", ".gif", ".ico", ".js", ".css"
         };
 
@@ -72,9 +71,9 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
             if (jwtUtil.validateJwtToken(token)) {
                 // payload 파싱
                 UserTokenDto userInfo = UserTokenDto.builder()
-                        .userId(jwtUtil.getBodyValue(token, "userId").toString())
+                        .accessToken(token)
+                        .userId(Long.valueOf(jwtUtil.getBodyValue(token, "userId").toString()))
                         .email(jwtUtil.getBodyValue(token, "email").toString())
-                        .token(token)
                         .build();
 
                 log.debug("[userInfo]" + userInfo.toString());
