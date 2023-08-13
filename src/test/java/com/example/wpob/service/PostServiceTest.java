@@ -1,6 +1,7 @@
 package com.example.wpob.service;
 
 import com.example.wpob.dto.post.PostEditDto;
+import com.example.wpob.dto.post.PostInfoDto;
 import com.example.wpob.entity.Users;
 import com.example.wpob.repository.PostsRepository;
 import com.example.wpob.repository.UsersRepository;
@@ -11,6 +12,9 @@ import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,6 +58,18 @@ class PostServiceTest {
         usersRepository.save(user);
 
         return user;
+    }
+
+    // 게시글 작성
+    void create_post() {
+        Users users = before_create_users();
+
+        PostEditDto postEditDto = PostEditDto.builder()
+                .title("test title")
+                .contents("test contents")
+                .build();
+
+        postService.createPost(postEditDto, users);
     }
 
     @Nested
@@ -126,6 +142,30 @@ class PostServiceTest {
                 postService.createPost(postEditDto, users);
                 // 정상 생성 되었는지 조회
                 assertTrue(postsRepository.countByUsers_IdAndIsDeletedIsFalse(users.getId()) > 0);
+            });
+        }
+    }
+
+    @Nested
+    @DisplayName("게시글 목록 조회 테스트")
+    @Transactional
+    class show_post_list_test {
+
+        @BeforeEach
+        void before_create_post() {
+            create_post();
+        }
+
+        @Test
+        @DisplayName("S01 - 목록 조회 성공")
+        void show_post_list_success_case1() {
+            Pageable pageable = PageRequest.of(0, 3); // 1페이지, 10개씩
+
+            assertDoesNotThrow(() -> {
+                // 게시글 목록 조회
+                Page<PostInfoDto> postList = postService.showPostList(pageable);
+                // 게시글이 1개 이상인지 체크
+                assertTrue(postList.getContent().size() > 0);
             });
         }
     }
