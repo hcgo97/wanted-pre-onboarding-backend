@@ -1,6 +1,7 @@
 package com.example.wpob.service;
 
-import com.example.wpob.dto.UserSignDto;
+import com.example.wpob.dto.user.UserSignDto;
+import com.example.wpob.dto.user.UserTokenDto;
 import com.example.wpob.exception.ApiResultStatus;
 import com.example.wpob.exception.UserException;
 import com.example.wpob.repository.UsersRepository;

@@ -1,4 +1,4 @@
-package com.example.wpob.dto;
+package com.example.wpob.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

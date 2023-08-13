@@ -1,4 +1,4 @@
-package com.example.wpob.dto;
+package com.example.wpob.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

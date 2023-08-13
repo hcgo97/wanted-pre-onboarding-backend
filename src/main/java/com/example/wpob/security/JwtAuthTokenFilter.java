@@ -1,6 +1,6 @@
 package com.example.wpob.security;
 
-import com.example.wpob.dto.UserTokenDto;
+import com.example.wpob.dto.user.UserAuthDto;
 import com.example.wpob.exception.ApiResultStatus;
 import com.example.wpob.exception.TokenException;
 import com.example.wpob.util.JwtUtil;

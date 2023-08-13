@@ -1,8 +1,9 @@
 package com.example.wpob.controller;
 
-import com.example.wpob.dto.ApiResponse;
-import com.example.wpob.dto.UserInfoDto;
-import com.example.wpob.dto.UserSignDto;
+import com.example.wpob.dto.*;
+import com.example.wpob.dto.user.UserInfoDto;
+import com.example.wpob.dto.user.UserSignDto;
+import com.example.wpob.dto.user.UserTokenDto;
 import com.example.wpob.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
