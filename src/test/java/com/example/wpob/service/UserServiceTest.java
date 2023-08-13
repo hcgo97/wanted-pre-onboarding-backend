@@ -5,6 +5,7 @@ import com.example.wpob.dto.user.UserTokenDto;
 import com.example.wpob.exception.ApiResultStatus;
 import com.example.wpob.exception.UserException;
 import com.example.wpob.repository.UsersRepository;
+import com.example.wpob.util.JwtUtil;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -18,11 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@ActiveProfiles(value = "local")
+@ActiveProfiles("local")
 class UserServiceTest {
 
     @Autowired
@@ -30,6 +30,9 @@ class UserServiceTest {
 
     @Autowired
     UsersRepository usersRepository;
+
+    @Autowired
+    JwtUtil jwtUtil;
 
     private static ValidatorFactory factory;
     private static Validator validator;
@@ -78,30 +81,44 @@ class UserServiceTest {
                 userService.join(userSignDto);
             }, ApiResultStatus.ALREADY_SIGNED_UP.getMessage());
         }
+    }
+
+
+    @Nested
+    @DisplayName("로그인 테스트")
+    @Transactional
+    class login_test {
 
         @Test
-        @DisplayName("E02 - 잘못된 이메일 형식")
-        void join_failed_case2() {
-            userSignDto.setEmail("abc1234.com");
+        @DisplayName("S01 - 로그인 성공")
+        void login_success_case1() {
+            UserSignDto userSignDto = UserSignDto.builder()
+                    .email("test1@abc.com")
+                    .password("test1234")
+                    .build();
 
-            // 이메일 형식인지 체크
-            Set<ConstraintViolation<UserSignDto>> violations = validator.validate(userSignDto);
-            violations.forEach(error -> {
-                assertThat(error.getMessage()).isEqualTo("잘못된 이메일 형식입니다.");
+            assertDoesNotThrow(() -> {
+                // 로그인 시도
+                UserTokenDto userTokenDto = userService.login(userSignDto);
+                // token 정상 발급되었는지 조회
+                assertNotNull(userTokenDto.getAccessToken());
+                // token 유효성 검사
+                assertTrue(jwtUtil.validateJwtToken(userTokenDto.getAccessToken()));
             });
         }
 
         @Test
-        @DisplayName("E03 - 잘못된 비밀번호 형식")
-        void join_failed_case3() {
-            // 비밀번호를 7자리로 변경
-            userSignDto.setPassword("1234567");
+        @DisplayName("E01 - 로그인 정보가 일치하지 않음")
+        void login_failed_case1() {
+            UserSignDto userSignDto = UserSignDto.builder()
+                    .email("test1@abc.com")
+                    .password("invalid_password")
+                    .build();
 
-            // 비밀번호가 8자리 이상인지 체크
-            Set<ConstraintViolation<UserSignDto>> violations = validator.validate(userSignDto);
-            violations.forEach(error -> {
-                assertThat(error.getMessage()).isEqualTo("비밀번호는 8자 이상 이어야 합니다.");
-            });
+            // 잘못된 비밀번호 테스트
+            assertThrows(UserException.class, () -> {
+                userService.login(userSignDto);
+            }, ApiResultStatus.LOGIN_FAILED.getMessage());
         }
     }
 }
