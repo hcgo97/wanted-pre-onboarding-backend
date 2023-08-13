@@ -8,11 +8,11 @@ import com.example.wpob.exception.ApiResultStatus;
 import com.example.wpob.exception.UserException;
 import com.example.wpob.repository.UsersRepository;
 import com.example.wpob.util.JwtUtil;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -26,7 +26,7 @@ public class UserService {
     /**
      * 회원가입
      */
-    @Transactional(rollbackOn = Exception.class)
+    @Transactional
     public UserInfoDto join(UserSignDto inputDto) {
         // 1. 이메일 유효성 검사
         if (usersRepository.findByEmailAndIsDeletedIsFalse(inputDto.getEmail()).isPresent()) {
@@ -47,6 +47,7 @@ public class UserService {
     /**
      * 로그인
      */
+    @Transactional(readOnly = true)
     public UserTokenDto login(UserSignDto inputDto) {
         // 1. 로그인 정보 확인
         Users users = usersRepository.findByEmailAndIsDeletedIsFalse(inputDto.getEmail())

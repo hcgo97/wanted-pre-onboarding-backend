@@ -5,10 +5,10 @@ import com.example.wpob.dto.post.PostInfoDto;
 import com.example.wpob.entity.Posts;
 import com.example.wpob.entity.Users;
 import com.example.wpob.repository.PostsRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -20,7 +20,7 @@ public class PostService {
     /**
      * 게시글 작성
      */
-    @Transactional(rollbackOn = Exception.class)
+    @Transactional
     public PostInfoDto createPost(PostEditDto inputDto, Users users) {
 
         // 1. 게시글 생성 및 저장
