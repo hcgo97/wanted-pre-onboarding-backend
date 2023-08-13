@@ -6,11 +6,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface PostsRepository extends JpaRepository<Posts, Long> {
 
     int countByUsers_IdAndIsDeletedIsFalse(Long userId);
 
     Page<Posts> findByIsDeletedIsFalseOrderByCreatedAtDesc(Pageable pageable);
+
+    Optional<Posts> findByIdAndIsDeletedIsFalse(Long postId);
 
 }

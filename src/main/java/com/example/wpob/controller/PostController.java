@@ -37,4 +37,13 @@ public class PostController extends BaseController {
         return responseBuilder(resultDto, HttpStatus.OK);
     }
 
+    /**
+     * 게시글 상세 조회
+     */
+    @GetMapping("/{postId}")
+    public ResponseEntity<ApiResponse> showPostDetail(@PathVariable Long postId) {
+        PostInfoDto resultDto = postService.showPostDetail(postId);
+        return responseBuilder(resultDto, HttpStatus.OK);
+    }
+
 }
