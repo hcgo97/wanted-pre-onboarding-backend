@@ -27,7 +27,8 @@ public enum ApiResultStatus {
     DATABASE_ACCESS_ERROR("E9100", "Database Access 중 에러가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
 
     // 커스텀 에러
-    ALREADY_SIGNED_UP("E4090", "이미 가입된 이메일입니다.", HttpStatus.CONFLICT);
+    ALREADY_SIGNED_UP("E4090", "이미 가입된 이메일입니다.", HttpStatus.CONFLICT),
+    LOGIN_FAILED("E4014", "로그인 정보가 일치하지 않습니다.", HttpStatus.UNAUTHORIZED);
 
     private final String code;
     private final String message;
