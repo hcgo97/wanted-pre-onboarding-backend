@@ -11,7 +11,7 @@ public enum ApiResultStatus {
     REQUEST_SUCCESS("S0000", "정상적으로 처리되었습니다.", HttpStatus.OK),
 
     CLIENT_ERROR("E4000", "잘못된 요청입니다.", HttpStatus.BAD_REQUEST),
-    UNAUTHORIZED("E4010", "허가되지 않는 접근입니다.", HttpStatus.UNAUTHORIZED),
+    UNAUTHORIZED("E4010", "로그인 정보를 찾을 수 없습니다.", HttpStatus.UNAUTHORIZED),
     FORBIDDEN("E4030", "해당 권한은 호출이 불가합니다.", HttpStatus.FORBIDDEN),
     NOT_FOUND("E4040", "해당 데이터 또는 경로를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     INVALID_FORMAT("E4220", "잘못된 형식의 값입니다.", HttpStatus.UNPROCESSABLE_ENTITY),
