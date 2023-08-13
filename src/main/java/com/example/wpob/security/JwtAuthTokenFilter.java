@@ -93,6 +93,7 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 
         } catch (Exception e) {
             handlerExceptionResolver.resolveException(request, response, null, e);
+            return;
         }
 
         log.info("Authenticate Success");
