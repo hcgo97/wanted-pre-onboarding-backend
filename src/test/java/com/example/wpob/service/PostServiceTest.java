@@ -63,10 +63,8 @@ class PostServiceTest {
     }
 
     // 게시글 생성 후 리턴
-    Posts create_post() {
-        Users users = create_users();
-
-        PostEditDto postEditDto = PostEditDto.builder()
+    Posts create_post(Users users) {
+        PostEditDto.builder()
                 .title("test title")
                 .contents("test contents")
                 .build();
@@ -160,7 +158,7 @@ class PostServiceTest {
         @DisplayName("S01 - 목록 조회 성공")
         void show_post_list_success_case1() {
             // 게시글 생성
-            create_post();
+            create_post(create_users());
             // 1페이지, 3개씩
             Pageable pageable = PageRequest.of(0, 3);
 
@@ -181,11 +179,13 @@ class PostServiceTest {
         @DisplayName("S01 - 상세 조회 성공")
         void show_post_detail_success_case1() {
             // 게시글 생성
-            Posts posts = create_post();
+            Posts posts = create_post(create_users());
 
             assertDoesNotThrow(() -> {
                 // 게시글 상세 조회
                 PostInfoDto postDetail = postService.showPostDetail(posts.getId());
+                // 해당 게시물 id와 조회한 게시물 id가 일치하는지 체크
+                assertEquals(postDetail.getId(), posts.getId());
             });
         }
 
@@ -193,14 +193,69 @@ class PostServiceTest {
         @DisplayName("E01 - 존재하지 않는 게시글")
         void show_post_detail_failed_case1() {
             // 게시글 생성
-            Posts posts = create_post();
+            Posts posts = create_post(create_users());
             // 존재하지 않는 게시글 id 지정
             long notExistPostId = posts.getId() + 1;
 
-            // 게시글 상세 조회
             assertThrows(PostException.class, () -> {
-                PostInfoDto postDetail = postService.showPostDetail(notExistPostId);
+                postService.showPostDetail(notExistPostId);
             }, ApiResultStatus.POST_NOT_FOUND.getMessage());
+        }
+    }
+
+    @Nested
+    @DisplayName("게시글 수정 테스트")
+    @Transactional
+    class edit_post_test {
+        Users users;
+        Posts posts;
+        PostEditDto postEditDto;
+
+        @BeforeEach
+        void setUp() {
+            users = create_users();
+            posts = create_post(users);
+            postEditDto = PostEditDto.builder()
+                    .title("edit title")
+                    .contents("edit contents")
+                    .build();
+        }
+
+        @Test
+        @DisplayName("S01 - 수정 성공")
+        void edit_post_success_case1() {
+            assertDoesNotThrow(() -> {
+                // 게시글 수정
+                PostInfoDto postInfoDto = postService.editPost(posts.getId(), postEditDto, users);
+                // 수정된 게시글이 정상적으로 조회되는지 체크
+                assertEquals(postInfoDto.getId(), posts.getId());
+                assertEquals(postInfoDto.getTitle(), postEditDto.getTitle());
+                assertEquals(postInfoDto.getContents(), postEditDto.getContents());
+            });
+        }
+
+        @Test
+        @DisplayName("E01 - 존재하지 않는 게시글")
+        void edit_post_failed_case1() {
+            // 존재하지 않는 게시글 id 지정
+            long notExistPostId = posts.getId() + 1;
+
+            // 게시글 수정 시도
+            assertThrows(PostException.class, () -> {
+                postService.editPost(notExistPostId, postEditDto, users);
+            }, ApiResultStatus.POST_NOT_FOUND.getMessage());
+        }
+
+        @Test
+        @DisplayName("E02 - 자신의 게시글이 아님")
+        void edit_post_failed_case2() {
+            // 새로운 유저 생성
+            Users newUsers = Users.create("newuser@abc.com", "12345678");
+
+            // 게시글 수정 시도
+            assertThrows(PostException.class, () -> {
+                postService.editPost(posts.getId(), postEditDto, newUsers);
+            }, ApiResultStatus.NOT_MY_POST.getMessage());
         }
     }
 
