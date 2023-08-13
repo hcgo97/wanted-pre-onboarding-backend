@@ -36,7 +36,7 @@ public class JwtUtil {
         Date validity = null;
 
         try {
-            claims.put("id", id);
+            claims.put("userId", id);
             claims.put("email", email);
             validity = new Date(now.getTime() + VALIDITY_IN_HOURS);
 
