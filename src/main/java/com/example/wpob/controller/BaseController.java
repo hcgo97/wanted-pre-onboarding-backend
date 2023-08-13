@@ -45,7 +45,7 @@ public class BaseController {
 
     protected Users getUsers() {
         return usersRepository.findByIdAndIsDeletedIsFalse(this.getUserId())
-                .orElseThrow(() -> new EntityNotFoundException(ApiResultStatus.NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new EntityNotFoundException(ApiResultStatus.USER_NOT_FOUND.getMessage()));
     }
 
 }
