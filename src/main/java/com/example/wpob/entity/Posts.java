@@ -1,6 +1,5 @@
 package com.example.wpob.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -42,7 +41,6 @@ public class Posts extends BaseTimeEntity {
     private Boolean isDeleted = false;
 
     @Column(name = "deleted_at")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime deletedAt = null;
 
     public static Posts create(Users users, String title, String contents) {
