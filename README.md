@@ -1,8 +1,9 @@
 # 원티드 프리온보딩 백엔드 인턴쉽 선발과제
 <br></br>
 
-## 1. 지원자의 성명
-### 김효정
+## 1. 지원자 성명
+- 김효정(BE)
+- gywjd5251@gmail.com
 <br></br>
 
 ## 2. 서버 구성
@@ -273,13 +274,13 @@ curl --location 'http://api-wanted-internship.hyoj.me/api/v1/posts' \
   - `status`: http 상태 코드, integer
   - `message`: 응답 메시지, string
   - `data`: 응답 데이터 객체, object
-    - content: 조회된 게시글 목록, array
+    - `content`: 조회된 게시글 목록, array
       - `id`: 게시글 PK, long
       - `author`: 게시글 작성자, string
       - `createdAt`: 생성 시각(yyyy-MM-dd HH-mm-ss), string
       - `isUpdated`: 수정 여부, boolean
       - `title`: 게시글 제목, string
-    - pageable: 페이징 객체, object
+    - `pageable`: 페이징 객체, object
    
 **Example**
 ```json
