@@ -3,7 +3,7 @@
 ## 1. 지원자 성명
 - 김효정(BE)
 - gywjd5251@gmail.com
-<br></br>
+  <br></br>
 
 ## 2. 서버 구성
 ## 2-1. 개발 환경
@@ -18,7 +18,7 @@
 ## 2-2. Endpoint
 - 로컬: http://127.0.0.1:8080
 - 상용: https://api-wanted-internship.hyoj.me
-<br></br>
+  <br></br>
 
 ## 3. 애플리케이션 실행 방법
 - 실행 전 `openjdk-17`, `docker`, `docker-compose` 패키지가 설치되어 있어야 함
@@ -29,26 +29,24 @@
 SPRING_PROFILE: local
 
 # DB 유저 정보
-DB_USERNAME: root
-DB_PASSWORD: root1234
+DB_PASSWORD: yourpassword1234
 
 # JWT 설정
-JWT_SECRET: secretkey1234
+JWT_SECRET: yoursecretkey1234
 JWT_EXPIRE: 600
 ```
 
-## 3-2. 프로젝트 루트 경로의 `start-server.sh` 쉘 스크립트 실행 또는 docker compose 명령어로 실행
-### 쉘 스크립트로 실행하기
-- build jar, docker compose up
+## 3-2. 프로젝트 루트 경로에서 build & run 진행
+### 1. start-server.sh 사용하여 build, run 한꺼번에 실행하기
 ```bash
 ./start-server.sh
 ```
-### docker compose 명령어로 실행하기
-- build jar
+### 2. start-server.sh 사용하지 않고 실행하기
+1. build jar
 ```bash
 ./gradlew clean bootJar
 ```
-- docker compose up
+2. docker compose up
 ```bash
 docker compose -f docker-compose.yml up -d
 ```
@@ -90,14 +88,15 @@ CREATE TABLE posts
     created_at datetime COMMENT '생성일자',
     updated_at datetime COMMENT '수정일자',
     is_deleted tinyint(1) DEFAULT false COMMENT '삭제여부 true/false',
-    deleted_at datetime   DEFAULT NULL COMMENT '삭제일자'
+    deleted_at datetime   DEFAULT NULL COMMENT '삭제일자',
+    FOREIGN KEY (user_id) REFERENCES users(id)
 ) COMMENT = '게시글 정보';
 ```
 <br></br>
 
 ## 5. API 동작 데모 영상
 - https://drive.google.com/file/d/1FUrDcgyWQBQZnJqR9z6flGi67YVCM_nv/view?usp=drive_link
-<br></br>
+  <br></br>
 
 ## 6. 구현 방법
 ## 6-1. 프로젝트 구조
@@ -129,53 +128,60 @@ CREATE TABLE posts
 - `email` 파라미터에 이미 가입된 이메일을 입력하여 요청할 경우, 'E4090, 이미 가입된 이메일입니다.' 응답을 내려주도록 함
 
 ## 6-3. 게시글(Posts)
-### 1. 사용자 로그인 여부 확인
+### 1. `Users`, `Posts` 각 Entity 에 대해 One-to-Many 관계 적용
+- 게시글은 1명의 사용자에 의해 작성되고, 사용자는 여러개의 게시글을 작성할 수 있으므로 `Users` <-> `Posts` 는 다대일(One-to-Many) 관계를 적용하였음
+- FetchType 을 Lazy 로 설정하여 `Posts` 테이블 조회 시 `Users` 테이블의 정보는 필요할 때만 가져올 수 있도록 함
+### 2. 사용자 로그인 여부 확인
 - Request Header 의 엑세스 토큰 여부를 확인하고, 액세스 토큰이 존재하지 않다면 '`E4010, 로그인 정보를 찾을 수 없습니다`' 응답을 내려주도록 함
-### 2. 게시글 목록 조회 시 Pagination 기능 적용
-- Pagination 기능을 적용하여 한꺼번에 많은 데이터를 불러오지 않고, 적절한 개수의 데이터만을 불러오도록 하였음
-### 3. 게시글 삭제 시 Soft Delete 처리
+### 3. 게시글 목록 조회 시 Pagination 기능 적용
+- Pagination 기능을 적용하여 한꺼번에 많은 데이터를 불러오지 않고, 적절한 개수의 데이터만을 불러올 수 있도록 하였음
+### 4. 게시글 삭제 시 Soft Delete 처리
 - DB 상에서 Hard Delete 가 아닌 Soft Delete 처리하여, 추후 삭제된 데이터를 복구해야하는 상황에서 대처 가능하도록 함
 - 게시글 삭제 시 `Posts` 테이블의 `is_delete` 컬럼이 `true`, `delete_at` 컬럼은 `삭제된 시각`으로 변경되도록 하여 게시글의 삭제 여부를 구분할 수 있도록 함
-### 4. 게시글 수정, 삭제 시 현재 사용자의 게시글인지 확인
+### 5. 게시글 수정, 삭제 시 현재 사용자의 게시글인지 확인
 - 액세스 토큰에 담긴 사용자 정보로 작업하려는 게시글이 현재 사용자의 게시글인지 확인함
 - 현재 사용자의 게시글이 아닌 경우 '`E4031, 해당 게시물에 대한 권한이 없습니다.`' 응답을 내려주도록 함
-### 5. 게시글 상세 조회, 수정, 삭제 시 존재하지 않는 게시글 여부 확인
+### 6. 게시글 상세 조회, 수정, 삭제 시 존재하지 않는 게시글 여부 확인
 - Path Variables 에 담긴 `postId` 가 존재하지 않는 게시글 id 이거나 삭제된 게시글 id 인 경우, '`E4042, 존재하지 않는 게시글입니다.`' 응답을 내려주도록 함
-<br></br>
+### 7. 게시글 삭제 API 성공 http status code 는 `204` 가 아닌 `200` 으로 처리
+- `204 NO_CONTENT` 로 처리할 시 Response Body 는 출력되지 않음
+- 모든 API 에 대해 일관성 있는 구조의 Response Body 를 출력하기 위하여 `204 NO_CONTENT` 가 아닌 `200 OK` 로 처리함
+  <br></br>
 
 ## 7. API 명세
 - [Postman Collection 다운로드](https://drive.google.com/file/d/1CvQqLTsTyZfUx_cS1Loe7IF9dOIuITK2/view?usp=drive_link)
 ## 7-1. 회원가입 API
-**URL**
-  - `/api/v1/users/join`
+### URL
+- `/api/v1/users/join`
 
-**Method**
-  - `POST`
+### Method
+- `POST`
 
-**Request Header**
-  - `Content-Type`: `application/json`
+### Request Header
+- `Content-Type`: `application/json`
 
-**Request Body**
-  - `email`: 이메일, string
-  - `password`: 패스워드, string
+### Request Body
+- `email`: 이메일, string
+- `password`: 패스워드, string
 
-**Response Body**
-  - `txid`: 요청 트랜잭션 id, string
-  - `status`: http 상태 코드, integer
-  - `message`: 응답 메시지, string
-  - `data`: 응답 데이터 객체, object
+### Response Body
+- `txid`: 요청 트랜잭션 id, string
+- `status`: http 상태 코드, integer
+- `message`: 응답 메시지, string
+- `data`: 응답 데이터 객체, object
     - `id`: 생성된 유저 PK, long
     - `email`: 생성된 유저 이메일, string
 
-**Example**
+### Example
+- **Request Body**
 ```json
-// Request Body
 {
     "email": "test@abc.com",
     "password": "test1234"
 }
-
-// Response Body
+```
+- **Response Body**
+```json
 {
     "txid": "558ca027-1248-4a63-935f-b3523153812a",
     "status": 201,
@@ -186,7 +192,7 @@ CREATE TABLE posts
     }
 }
 ```
-**curl**
+- **curl**
 ```bash
 curl --location 'https://api-wanted-internship.hyoj.me/api/v1/users/join' \
 --header 'Content-Type: application/json' \
@@ -198,38 +204,39 @@ curl --location 'https://api-wanted-internship.hyoj.me/api/v1/users/join' \
 <br></br>
 
 ## 7-2. 로그인 API
-**URL**
-  - `/api/v1/users/login`
+### URL
+- `/api/v1/users/login`
 
-**Method**
-  - `POST`
+### Method
+- `POST`
 
-**Request Header**
-  - `Content-Type`: `application/json`
+### Request Header
+- `Content-Type`: `application/json`
 
-**Request Body**
-  - `email`: 이메일, string
-  - `password`: 패스워드, string
+### Request Body
+- `email`: 이메일, string
+- `password`: 패스워드, string
 
-**Response Body**
-  - `txid`: 요청 트랜잭션 id, string
-  - `status`: http 상태 코드, integer
-  - `message`: 응답 메시지, string
-  - `data`: 응답 데이터 객체, object
+### Response Body
+- `txid`: 요청 트랜잭션 id, string
+- `status`: http 상태 코드, integer
+- `message`: 응답 메시지, string
+- `data`: 응답 데이터 객체, object
     - `accessToken`: 유저 액세스 토큰, string
     - `userInfo`: 유저 정보 객체, object
-      - `id`: 생성된 유저 PK, long
-      - `email`: 생성된 유저 이메일, string
+        - `id`: 생성된 유저 PK, long
+        - `email`: 생성된 유저 이메일, string
 
-**Example**
+### Example
+- **Request Body**
 ```json
-// Request Body
 {
     "email": "test@abc.com",
     "password": "test1234"
 }
-
-// Response Body
+```
+- **Response Body**
+```json
 {
     "txid": "46fac5d6-7279-4bf2-9140-8d35dc160e24",
     "status": 200,
@@ -243,7 +250,7 @@ curl --location 'https://api-wanted-internship.hyoj.me/api/v1/users/join' \
     }
 }
 ```
-**curl**
+- **curl**
 ```bash
 curl --location 'https://api-wanted-internship.hyoj.me/api/v1/users/login' \
 --header 'Content-Type: application/json' \
@@ -255,25 +262,25 @@ curl --location 'https://api-wanted-internship.hyoj.me/api/v1/users/login' \
 <br></br>
 
 ## 7-3. 게시글 작성 API
-**URL**
-  - `/api/v1/posts`
+### URL
+- `/api/v1/posts`
 
-**Method**
-  - `POST`
+### Method
+- `POST`
 
-**Request Header**
-  - `Content-Type`: `application/json`
-  - `Authorization`: Bearer Token, string
+### Request Header
+- `Content-Type`: `application/json`
+- `Authorization`: Bearer Token, string
 
-**Request Body**
-  - `title`: 게시글 제목, string
-  - `contents`: 게시글 내용, string
+### Request Body
+- `title`: 게시글 제목, string
+- `contents`: 게시글 내용, string
 
-**Response Body**
-  - `txid`: 요청 트랜잭션 id, string
-  - `status`: http 상태 코드, integer
-  - `message`: 응답 메시지, string
-  - `data`: 응답 데이터 객체, object
+### Response Body
+- `txid`: 요청 트랜잭션 id, string
+- `status`: http 상태 코드, integer
+- `message`: 응답 메시지, string
+- `data`: 응답 데이터 객체, object
     - `id`: 생성된 게시글 PK, long
     - `author`: 게시글 작성자, string
     - `createdAt`: 생성 시각(yyyy-MM-dd HH-mm-ss), string
@@ -282,15 +289,16 @@ curl --location 'https://api-wanted-internship.hyoj.me/api/v1/users/login' \
     - `title`: 생성된 게시글 제목, string
     - `contents`: 생성된 게시글 내용, string
 
-**Example**
+### Example
+- **Request Body**
 ```json
-// Request Body
 {
     "title": "test title",
     "contents": "test contents~~~"
 }
-
-// Response Body
+```
+- **Response Body**
+```json
 {
     "txid": "bd8ba5a6-bb13-4329-9edf-f45a15da1554",
     "status": 201,
@@ -306,7 +314,7 @@ curl --location 'https://api-wanted-internship.hyoj.me/api/v1/users/login' \
     }
 }
 ```
-**curl**
+- **curl**
 ```bash
 curl --location 'https://api-wanted-internship.hyoj.me/api/v1/posts' \
 --header 'Content-Type: application/json' \
@@ -319,36 +327,36 @@ curl --location 'https://api-wanted-internship.hyoj.me/api/v1/posts' \
 <br></br>
 
 ## 7-4. 게시글 목록 조회 API
-**URL**
-  - `/api/v1/posts`
+### URL
+- `/api/v1/posts`
 
-**Method**
-  - `GET`
+### Method
+- `GET`
 
-**Request Header**
-  - `Content-Type`: `application/json`
-  - `Authorization`: Bearer Token, string
+### Request Header
+- `Content-Type`: `application/json`
+- `Authorization`: Bearer Token, string
 
-**Request Parameters**
-  - `page`: 페이지 번호 (1부터 시작), integer
-  - `size`: 페이지 당 표시할 게시글 수, integer
+### Request Parameters
+- `page`: 페이지 번호 (1부터 시작), integer
+- `size`: 페이지 당 표시할 게시글 수, integer
 
-**Response Body**
-  - `txid`: 요청 트랜잭션 id, string
-  - `status`: http 상태 코드, integer
-  - `message`: 응답 메시지, string
-  - `data`: 응답 데이터 객체, object
+### Response Body
+- `txid`: 요청 트랜잭션 id, string
+- `status`: http 상태 코드, integer
+- `message`: 응답 메시지, string
+- `data`: 응답 데이터 객체, object
     - `content`: 조회된 게시글 목록, array
-      - `id`: 게시글 PK, long
-      - `author`: 게시글 작성자, string
-      - `createdAt`: 생성 시각(yyyy-MM-dd HH-mm-ss), string
-      - `isUpdated`: 수정 여부, boolean
-      - `title`: 게시글 제목, string
+        - `id`: 게시글 PK, long
+        - `author`: 게시글 작성자, string
+        - `createdAt`: 생성 시각(yyyy-MM-dd HH-mm-ss), string
+        - `isUpdated`: 수정 여부, boolean
+        - `title`: 게시글 제목, string
     - `pageable`: 페이징 객체, object
-   
-**Example**
+
+### Example
+- **Response Body**
 ```json
-// Response Body
 {
     "txid": "dbf43fd4-1b36-4f2c-ac5a-e1f19546d318",
     "status": 200,
@@ -391,7 +399,7 @@ curl --location 'https://api-wanted-internship.hyoj.me/api/v1/posts' \
     }
 }
 ```
-**curl**
+- **curl**
 ```bash
 curl --location 'https://api-wanted-internship.hyoj.me/api/v1/posts?page=1&size=1' \
 --header 'Content-Type: application/json' \
@@ -400,24 +408,24 @@ curl --location 'https://api-wanted-internship.hyoj.me/api/v1/posts?page=1&size=
 <br></br>
 
 ## 7-5. 게시글 상세 조회 API
-**URL**
-  - `/api/v1/posts/{postId}`
+### URL
+- `/api/v1/posts/{postId}`
 
-**Method**
-  - `GET`
+### Method
+- `GET`
 
-**Path Variables**
-  - `postId`: 조회할 게시글 PK, long
+### Path Variables
+- `postId`: 조회할 게시글 PK, long
 
-**Request Header**
-  - `Content-Type`: `application/json`
-  - `Authorization`: Bearer Token, string
+### Request Header
+- `Content-Type`: `application/json`
+- `Authorization`: Bearer Token, string
 
-**Response Body**
-  - `txid`: 요청 트랜잭션 id, string
-  - `status`: http 상태 코드, integer
-  - `message`: 응답 메시지, string
-  - `data`: 응답 데이터 객체, object
+### Response Body
+- `txid`: 요청 트랜잭션 id, string
+- `status`: http 상태 코드, integer
+- `message`: 응답 메시지, string
+- `data`: 응답 데이터 객체, object
     - `id`: 게시글 PK, long
     - `author`: 작성자, string
     - `createdAt`: 생성 시각(yyyy-MM-dd HH-mm-ss), string
@@ -425,10 +433,10 @@ curl --location 'https://api-wanted-internship.hyoj.me/api/v1/posts?page=1&size=
     - `isUpdated`: 수정 여부, boolean
     - `title`: 게시글 제목, string
     - `contents`: 게시글 내용, string
-   
-**Example**
+
+### Example
+- **Response Body**
 ```json
-// Response Body
 {
     "txid": "269c279e-1822-4733-ba68-5e26c2150ba9",
     "status": 200,
@@ -444,7 +452,7 @@ curl --location 'https://api-wanted-internship.hyoj.me/api/v1/posts?page=1&size=
     }
 }
 ```
-**curl**
+- **curl**
 ```bash
 curl --location 'https://api-wanted-internship.hyoj.me/api/v1/posts/72' \
 --header 'Content-Type: application/json' \
@@ -453,28 +461,28 @@ curl --location 'https://api-wanted-internship.hyoj.me/api/v1/posts/72' \
 <br></br>
 
 ## 7-6. 게시글 수정 API
-**URL**
-  - `/api/v1/posts/{postId}`
+### URL
+- `/api/v1/posts/{postId}`
 
-**Method**
-  - `PUT`
+### Method
+- `PUT`
 
-**Path Variables**
-  - `postId`: 수정할 게시글 PK, long
+### Path Variables
+- `postId`: 수정할 게시글 PK, long
 
-**Request Header**
-  - `Content-Type`: `application/json`
-  - `Authorization`: Bearer Token, string
+### Request Header
+- `Content-Type`: `application/json`
+- `Authorization`: Bearer Token, string
 
-**Request Body**
-  - `title`: 게시글 제목, string
-  - `contents`: 게시글 내용, string
+### Request Body
+- `title`: 게시글 제목, string
+- `contents`: 게시글 내용, string
 
-**Response Body**
-  - `txid`: 요청 트랜잭션 id, string
-  - `status`: http 상태 코드, integer
-  - `message`: 응답 메시지, string
-  - `data`: 응답 데이터 객체, object
+### Response Body
+- `txid`: 요청 트랜잭션 id, string
+- `status`: http 상태 코드, integer
+- `message`: 응답 메시지, string
+- `data`: 응답 데이터 객체, object
     - `id`: 수정된 게시글 PK, long
     - `author`: 작성자, string
     - `createdAt`: 생성 시각(yyyy-MM-dd HH-mm-ss), string
@@ -482,16 +490,17 @@ curl --location 'https://api-wanted-internship.hyoj.me/api/v1/posts/72' \
     - `isUpdated`: 수정 여부, boolean
     - `title`: 수정된 게시글 제목, string
     - `contents`: 수정된 게시글 내용, string
-   
-**Example**
+
+### Example
+- **Request Body**
 ```json
-// Request Body
 {
     "title": "edited title",
     "contents": "edited contents~~~"
 }
-
-// Response Body
+```
+- **Response Body**
+```json
 {
     "txid": "bd8ba5a6-bb13-4329-9edf-f45a15da1554",
     "status": 201,
@@ -507,7 +516,7 @@ curl --location 'https://api-wanted-internship.hyoj.me/api/v1/posts/72' \
     }
 }
 ```
-**curl**
+- **curl**
 ```bash
 curl --location --request PUT 'https://api-wanted-internship.hyoj.me/api/v1/posts/72' \
 --header 'Content-Type: application/json' \
@@ -520,24 +529,24 @@ curl --location --request PUT 'https://api-wanted-internship.hyoj.me/api/v1/post
 <br></br>
 
 ## 7-7. 게시글 삭제 API
-**URL**
-  - `/api/v1/posts/{postId}`
+### URL
+- `/api/v1/posts/{postId}`
 
-**Method**
-  - `DELETE`
+### Method
+- `DELETE`
 
-**Path Variables**
-  - `postId`: 삭제할 게시글 PK, long
+### Path Variables
+- `postId`: 삭제할 게시글 PK, long
 
-**Request Header**
-  - `Content-Type`: `application/json`
-  - `Authorization`: Bearer Token, string
+### Request Header
+- `Content-Type`: `application/json`
+- `Authorization`: Bearer Token, string
 
-**Response Body**
-  - `txid`: 요청 트랜잭션 id, string
-  - `status`: http 상태 코드, integer
-  - `message`: 응답 메시지, string
-  - `data`: 응답 데이터 객체, object
+### Response Body
+- `txid`: 요청 트랜잭션 id, string
+- `status`: http 상태 코드, integer
+- `message`: 응답 메시지, string
+- `data`: 응답 데이터 객체, object
     - `id`: 삭제된 게시글 PK, long
     - `author`: 작성자, string
     - `createdAt`: 생성 시각(yyyy-MM-dd HH-mm-ss), string
@@ -545,10 +554,10 @@ curl --location --request PUT 'https://api-wanted-internship.hyoj.me/api/v1/post
     - `isUpdated`: 수정 여부, boolean
     - `title`: 삭제된 게시글 제목, string
     - `contents`: 삭제된 게시글 내용, string
-   
-**Example**
+
+### Example
+- **Response Body**
 ```json
-// Response Body
 {
     "txid": "bd8ba5a6-bb13-4329-9edf-f45a15da1554",
     "status": 201,
@@ -564,16 +573,35 @@ curl --location --request PUT 'https://api-wanted-internship.hyoj.me/api/v1/post
     }
 }
 ```
-**curl**
+- **curl**
 ```bash
 curl --location --request DELETE 'https://api-wanted-internship.hyoj.me/api/v1/posts/72' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer xxxx'
 ```
 
+## 7-8. 에러 정의
+|에러 코드|에러 이름|상태 코드|에러 설명|
+|----|----|----|----|
+|E4000|CLIENT_ERROR|400|잘못된 요청 파라미터|
+|**E4010**|**UNAUTHORIZED**|**401**|**로그인 정보가 없음**|
+|E4011|TOKEN_NOT_FOUND|401|토큰을 찾을 수 없음|
+|E4012|TOKEN_INVALID|401|유효하지 않은 토큰|
+|E4013|TOKEN_DATE_EXPIRED|401|토큰이 만료됨|
+|E4030|FORBIDDEN|403|권한 없음|
+|**E4031**|**NOT_MY_POST**|**403**|**해당 게시글에 대한 작업 권한 없음**|
+|E4040|NOT_FOUND|404|존재하지 않는 데이터 또는 경로|
+|**E4041**|**USER_NOT_FOUND**|**404**|**존재하지 않는 유저**|
+|**E4042**|**POST_NOT_FOUND**|**404**|**존재하지 않는 게시글**|
+|**E4090**|**ALREADY_SIGNED_UP**|**409**|**이미 가입된 이메일**|
+|**E4220**|**INVALID_FORMAT**|**422**|**파라미터 유효성 검사 실패**|
+|E9000|INTERNAL_SERVER_ERROR|500|서버 에러|
+|E9100|DATABASE_ACCESS_ERROR|500|DB 에러|
+|E9200|TOKEN_CREATED_FAILED|500|토큰 생성 중 에러|
+
 <br></br>
 
 ## 8. 클라우드 환경 구조
 - Endpoint: https://api-wanted-internship.hyoj.me
-![김효정-AWS구조](https://github.com/hcgo97/wanted-pre-onboarding-backend/assets/72455719/f663c13e-6fda-4fce-8202-39bdc124e986)
+  ![김효정-AWS구조](https://github.com/hcgo97/wanted-pre-onboarding-backend/assets/72455719/f663c13e-6fda-4fce-8202-39bdc124e986)
 
