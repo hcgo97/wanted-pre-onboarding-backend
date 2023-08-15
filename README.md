@@ -17,7 +17,7 @@
 
 **2-2. Endpoint**
 - 로컬: http://127.0.0.1:8080
-- 상용: http://api-wanted-internship.hyoj.me
+- 상용: https://api-wanted-internship.hyoj.me
 <br></br>
 
 ## 3. 애플리케이션 실행 방법
@@ -48,7 +48,7 @@ curl -X GET http://localhost:8080/actuator/health
 ```
 ```bash
 # 상용
-curl -X GET http://api-wanted-internship.hyoj.me/actuator/health
+curl -X GET https://api-wanted-internship.hyoj.me/actuator/health
 ```
 <br></br>
 
@@ -131,7 +131,7 @@ CREATE TABLE posts
 ```
 **curl**
 ```bash
-curl --location 'http://api-wanted-internship.hyoj.me/api/v1/users/join' \
+curl --location 'https://api-wanted-internship.hyoj.me/api/v1/users/join' \
 --data-raw '{
     "email": "test@abc.com",
     "password": "test1234"
@@ -184,7 +184,7 @@ curl --location 'http://api-wanted-internship.hyoj.me/api/v1/users/join' \
 ```
 **curl**
 ```bash
-curl --location 'http://api-wanted-internship.hyoj.me/api/v1/users/login' \
+curl --location 'https://api-wanted-internship.hyoj.me/api/v1/users/login' \
 --data-raw '{
     "email": "test@abc.com",
     "password": "test1234"
@@ -245,7 +245,7 @@ curl --location 'http://api-wanted-internship.hyoj.me/api/v1/users/login' \
 ```
 **curl**
 ```bash
-curl --location 'http://api-wanted-internship.hyoj.me/api/v1/posts' \
+curl --location 'https://api-wanted-internship.hyoj.me/api/v1/posts' \
 --header 'Authorization: Bearer xxxx' \
 --data '{
     "title": "test title",
@@ -328,7 +328,7 @@ curl --location 'http://api-wanted-internship.hyoj.me/api/v1/posts' \
 ```
 **curl**
 ```bash
-curl --location 'http://api-wanted-internship.hyoj.me/api/v1/posts?page=1&size=1' \
+curl --location 'https://api-wanted-internship.hyoj.me/api/v1/posts?page=1&size=1' \
 --header 'Authorization: Bearer xxxx'
 ```
 <br></br>
@@ -379,7 +379,7 @@ curl --location 'http://api-wanted-internship.hyoj.me/api/v1/posts?page=1&size=1
 ```
 **curl**
 ```bash
-curl --location 'http://api-wanted-internship.hyoj.me/api/v1/posts/72' \
+curl --location 'https://api-wanted-internship.hyoj.me/api/v1/posts/72' \
 --header 'Authorization: Bearer xxxx'
 ```
 <br></br>
@@ -440,7 +440,7 @@ curl --location 'http://api-wanted-internship.hyoj.me/api/v1/posts/72' \
 ```
 **curl**
 ```bash
-curl --location --request PUT 'http://api-wanted-internship.hyoj.me/api/v1/posts/72' \
+curl --location --request PUT 'https://api-wanted-internship.hyoj.me/api/v1/posts/72' \
 --header 'Authorization: Bearer xxxx' \
 --data '{
     "title": "edited title",
@@ -495,12 +495,12 @@ curl --location --request PUT 'http://api-wanted-internship.hyoj.me/api/v1/posts
 ```
 **curl**
 ```bash
-curl --location --request DELETE 'http://api-wanted-internship.hyoj.me/api/v1/posts/72' \
+curl --location --request DELETE 'https://api-wanted-internship.hyoj.me/api/v1/posts/72' \
 --header 'Authorization: Bearer xxxx'
 ```
 
 <br></br>
 
 ## 8. 클라우드 환경 구조
-- Endpoint: http://api-wanted-internship.hyoj.me
+- Endpoint: https://api-wanted-internship.hyoj.me
 
