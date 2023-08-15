@@ -83,7 +83,7 @@ CREATE TABLE posts
 <br></br>
 
 ## 5. API 동작 데모 영상
-
+- https://drive.google.com/file/d/1FUrDcgyWQBQZnJqR9z6flGi67YVCM_nv/view?usp=drive_link
 <br></br>
 
 ## 6. 구현 방법
