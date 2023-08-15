@@ -25,13 +25,16 @@
 
 **3-1. 프로젝트 루트 경로에 `.env` 생성**
 ```env
-SPRING_PROFILE: '프로파일(local/dev/prod)'
+# 활성화 할 프로파일
+SPRING_PROFILE: local
 
-DB_USERNAME: 'Database 유저명'
-DB_PASSWORD: 'Database 비밀번호'
+# DB 유저 정보
+DB_USERNAME: root
+DB_PASSWORD: root1234
 
-JWT_SECRET: 'JWT Secret Key'
-JWT_EXPIRE: 'JWT 만료 시간(초 단위)'
+# JWT 설정
+JWT_SECRET: secretkey1234
+JWT_EXPIRE: 600
 ```
 
 **3-2. 프로젝트 루트 경로의 `start-server.sh` 쉘 스크립트 실행 또는 docker compose 명령어로 실행**
