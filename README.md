@@ -598,6 +598,27 @@ curl --location --request DELETE 'https://api-wanted-internship.hyoj.me/api/v1/p
 |E9100|DATABASE_ACCESS_ERROR|500|DB 에러|
 |E9200|TOKEN_CREATED_FAILED|500|토큰 생성 중 에러|
 
+### Response Body
+- `txid`: 요청 트랜잭션 id, string
+- `status`: http 상태 코드, integer
+- `message`: 응답 메시지, string
+- `error`: 에러 데이터 객체, object
+  - `code`: 에러 코드, string
+  - `description`: 에러 이름(설명), string
+
+### Example
+- **Response Body**
+```json
+{
+    "txid": "054871bd-32a1-4b4a-916e-fac786077d8a",
+    "status": 401,
+    "message": "로그인 정보가 일치하지 않습니다.",
+    "error": {
+        "code": "E4014",
+        "description": "LOGIN_FAILED"
+    }
+}
+```
 <br></br>
 
 ## 8. 클라우드 환경 구조
