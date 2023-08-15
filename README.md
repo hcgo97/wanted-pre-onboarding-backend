@@ -6,7 +6,7 @@
 <br></br>
 
 ## 2. 서버 구성
-**2-1. 개발 환경**
+## 2-1. 개발 환경
 - **OS**: Alpine Linux 3.16
 - **Language**: openjdk 17
 - **Framework**: SpringBoot 3.1.2
@@ -15,7 +15,7 @@
 - **ORM**: Spring Boot JPA
 - **Etc**: lombok, jjwt, flyway
 
-**2-2. Endpoint**
+## 2-2. Endpoint
 - 로컬: http://127.0.0.1:8080
 - 상용: https://api-wanted-internship.hyoj.me
 <br></br>
@@ -23,7 +23,7 @@
 ## 3. 애플리케이션 실행 방법
 - 실행 전 `openjdk-17`, `docker`, `docker-compose` 패키지가 설치되어 있어야 함
 
-**3-1. 프로젝트 루트 경로에 `.env` 생성**
+## 3-1. 프로젝트 루트 경로에 `.env` 생성
 ```env
 # 활성화 할 프로파일
 SPRING_PROFILE: local
@@ -37,29 +37,30 @@ JWT_SECRET: secretkey1234
 JWT_EXPIRE: 600
 ```
 
-**3-2. 프로젝트 루트 경로의 `start-server.sh` 쉘 스크립트 실행 또는 docker compose 명령어로 실행**
-- 쉘 스크립트로 실행하기
+## 3-2. 프로젝트 루트 경로의 `start-server.sh` 쉘 스크립트 실행 또는 docker compose 명령어로 실행
+### 쉘 스크립트로 실행하기
+- build jar, docker compose up
 ```bash
-# build jar, docker compose up
 ./start-server.sh
 ```
-- docker compose 명령어로 실행하기
+### docker compose 명령어로 실행하기
+- build jar
 ```bash
-# build jar
 ./gradlew clean bootJar
-
-# docker compose up
+```
+- docker compose up
+```bash
 docker compose -f docker-compose.yml up -d
 ```
 
-**3-3. Endpoint 호출 방법**
-- health check API 를 통해 서버가 정상적으로 실행되었는지 확인
+## 3-3. Endpoint 호출 방법
+### health check API 를 통해 서버가 정상적으로 실행되었는지 확인
+- 로컬
 ```bash
-# 로컬
-curl -X GET http://localhost:8080/actuator/health
+curl -X GET http://127.0.0.1:8080/actuator/health
 ```
+- 상용
 ```bash
-# 상용
 curl -X GET https://api-wanted-internship.hyoj.me/actuator/health
 ```
 <br></br>
@@ -151,6 +152,9 @@ CREATE TABLE posts
 **Method**
   - `POST`
 
+**Request Header**
+  - `Content-Type`: `application/json`
+
 **Request Body**
   - `email`: 이메일, string
   - `password`: 패스워드, string
@@ -185,7 +189,8 @@ CREATE TABLE posts
 **curl**
 ```bash
 curl --location 'https://api-wanted-internship.hyoj.me/api/v1/users/join' \
---data-raw '{
+--header 'Content-Type: application/json' \
+--data '{
     "email": "test@abc.com",
     "password": "test1234"
 }'
@@ -198,6 +203,9 @@ curl --location 'https://api-wanted-internship.hyoj.me/api/v1/users/join' \
 
 **Method**
   - `POST`
+
+**Request Header**
+  - `Content-Type`: `application/json`
 
 **Request Body**
   - `email`: 이메일, string
@@ -238,7 +246,8 @@ curl --location 'https://api-wanted-internship.hyoj.me/api/v1/users/join' \
 **curl**
 ```bash
 curl --location 'https://api-wanted-internship.hyoj.me/api/v1/users/login' \
---data-raw '{
+--header 'Content-Type: application/json' \
+--data '{
     "email": "test@abc.com",
     "password": "test1234"
 }'
@@ -253,6 +262,7 @@ curl --location 'https://api-wanted-internship.hyoj.me/api/v1/users/login' \
   - `POST`
 
 **Request Header**
+  - `Content-Type`: `application/json`
   - `Authorization`: Bearer Token, string
 
 **Request Body**
@@ -299,6 +309,7 @@ curl --location 'https://api-wanted-internship.hyoj.me/api/v1/users/login' \
 **curl**
 ```bash
 curl --location 'https://api-wanted-internship.hyoj.me/api/v1/posts' \
+--header 'Content-Type: application/json' \
 --header 'Authorization: Bearer xxxx' \
 --data '{
     "title": "test title",
@@ -315,6 +326,7 @@ curl --location 'https://api-wanted-internship.hyoj.me/api/v1/posts' \
   - `GET`
 
 **Request Header**
+  - `Content-Type`: `application/json`
   - `Authorization`: Bearer Token, string
 
 **Request Parameters**
@@ -382,6 +394,7 @@ curl --location 'https://api-wanted-internship.hyoj.me/api/v1/posts' \
 **curl**
 ```bash
 curl --location 'https://api-wanted-internship.hyoj.me/api/v1/posts?page=1&size=1' \
+--header 'Content-Type: application/json' \
 --header 'Authorization: Bearer xxxx'
 ```
 <br></br>
@@ -397,6 +410,7 @@ curl --location 'https://api-wanted-internship.hyoj.me/api/v1/posts?page=1&size=
   - `postId`: 조회할 게시글 PK, long
 
 **Request Header**
+  - `Content-Type`: `application/json`
   - `Authorization`: Bearer Token, string
 
 **Response Body**
@@ -433,6 +447,7 @@ curl --location 'https://api-wanted-internship.hyoj.me/api/v1/posts?page=1&size=
 **curl**
 ```bash
 curl --location 'https://api-wanted-internship.hyoj.me/api/v1/posts/72' \
+--header 'Content-Type: application/json' \
 --header 'Authorization: Bearer xxxx'
 ```
 <br></br>
@@ -448,6 +463,7 @@ curl --location 'https://api-wanted-internship.hyoj.me/api/v1/posts/72' \
   - `postId`: 수정할 게시글 PK, long
 
 **Request Header**
+  - `Content-Type`: `application/json`
   - `Authorization`: Bearer Token, string
 
 **Request Body**
@@ -494,6 +510,7 @@ curl --location 'https://api-wanted-internship.hyoj.me/api/v1/posts/72' \
 **curl**
 ```bash
 curl --location --request PUT 'https://api-wanted-internship.hyoj.me/api/v1/posts/72' \
+--header 'Content-Type: application/json' \
 --header 'Authorization: Bearer xxxx' \
 --data '{
     "title": "edited title",
@@ -513,6 +530,7 @@ curl --location --request PUT 'https://api-wanted-internship.hyoj.me/api/v1/post
   - `postId`: 삭제할 게시글 PK, long
 
 **Request Header**
+  - `Content-Type`: `application/json`
   - `Authorization`: Bearer Token, string
 
 **Response Body**
@@ -549,6 +567,7 @@ curl --location --request PUT 'https://api-wanted-internship.hyoj.me/api/v1/post
 **curl**
 ```bash
 curl --location --request DELETE 'https://api-wanted-internship.hyoj.me/api/v1/posts/72' \
+--header 'Content-Type: application/json' \
 --header 'Authorization: Bearer xxxx'
 ```
 
