@@ -34,10 +34,19 @@ JWT_SECRET: 'JWT Secret Key'
 JWT_EXPIRE: 'JWT 만료 시간(초 단위)'
 ```
 
-**3-2. 프로젝트 루트 경로의 `start-server.sh` 쉘 스크립트 실행**
+**3-2. 프로젝트 루트 경로의 `start-server.sh` 쉘 스크립트 실행 또는 docker compose 명령어로 실행**
+- 쉘 스크립트로 실행하기
 ```bash
-# build jar, docker compose up 진행
+# build jar, docker compose up
 ./start-server.sh
+```
+- docker compose 명령어로 실행하기
+```bash
+# build jar
+./gradlew clean bootJar
+
+# docker compose up
+docker compose -f docker-compose.yml up -d
 ```
 
 **3-3. Endpoint 호출 방법**
