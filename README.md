@@ -544,5 +544,5 @@ curl --location --request DELETE 'https://api-wanted-internship.hyoj.me/api/v1/p
 
 ## 8. 클라우드 환경 구조
 - Endpoint: https://api-wanted-internship.hyoj.me
-![김효정-AWS구조](https://github.com/hcgo97/wanted-pre-onboarding-backend/assets/72455719/b3a9c99b-3474-437b-9efb-b0c4c1a44f18)
+![김효정-AWS구조](https://github.com/hcgo97/wanted-pre-onboarding-backend/assets/72455719/f663c13e-6fda-4fce-8202-39bdc124e986)
 
