@@ -3,6 +3,9 @@ FROM khipu/openjdk17-alpine
 # work directory 설정
 WORKDIR /app
 
+# timezone
+ENV TZ="Asia/Seoul"
+
 # spring profile 설정
 ARG SPRING_PROFILE
 
