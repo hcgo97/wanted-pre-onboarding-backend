@@ -21,7 +21,7 @@
   <br></br>
 
 ## 3. 애플리케이션 실행 방법
-- 실행 전 `openjdk-17`, `docker`, `docker-compose` 패키지가 설치되어 있어야 함
+- **실행 전 `openjdk-17`, `docker`, `docker-compose` 가 설치되어 있어야 합니다.**
 
 ## 3-1. 프로젝트 루트 경로에 `.env` 생성
 ```env
@@ -601,6 +601,10 @@ curl --location --request DELETE 'https://api-wanted-internship.hyoj.me/api/v1/p
 <br></br>
 
 ## 8. 클라우드 환경 구조
-- Endpoint: https://api-wanted-internship.hyoj.me
-  ![김효정-AWS구조](https://github.com/hcgo97/wanted-pre-onboarding-backend/assets/72455719/f663c13e-6fda-4fce-8202-39bdc124e986)
-
+### Endpoint: https://api-wanted-internship.hyoj.me
+![김효정-AWS구조](https://github.com/hcgo97/wanted-pre-onboarding-backend/assets/72455719/8c9aabcc-714f-4f56-8b70-957c8e602303)
+- EC2 인스턴스 상에서 Docker Compose를 활용하여 API 서버와 MySQL 컨테이너를 실행시켰습니다.
+- Cloudflare DNS 를 사용하여 개인 도메인 `hyoj.me` 에 EC2 인스턴스 주소를 연결하였습니다.
+- Certbot 을 활용하여 SSL 인증서를 발급받고, 이를 Nginx 에 적용하여 https 요청이 가능하도록 하였습니다.
+- 보안을 강화하기 위해 EC2 인스턴스의 인바운드 포트는 `80` 과 `443` 만 허용하였으며, Nginx 를 사용하여 API 서버 포트 8080 에 연결되도록 하였습니다.
+- 만약 `80` 포트로 들어오는 http 요청이 발생하면, 이를 `443` 포트의 https 요청으로 리다이렉트시켜 서버 접속이 https 프로토콜로만 이루어지도록 설정하였습니다.
