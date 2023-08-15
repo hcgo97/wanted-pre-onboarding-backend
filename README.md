@@ -95,8 +95,9 @@ CREATE TABLE posts
 <br></br>
 
 ## 5. API 동작 데모 영상
-- https://drive.google.com/file/d/1FUrDcgyWQBQZnJqR9z6flGi67YVCM_nv/view?usp=drive_link
-  <br></br>
+- [YouTube Link](https://youtu.be/YpvDwI46trw)
+- [Google Drive Link](https://drive.google.com/file/d/1FUrDcgyWQBQZnJqR9z6flGi67YVCM_nv/view?usp=drive_link)
+<br></br>
 
 ## 6. 구현 방법
 ## 6-1. 프로젝트 아키텍처
@@ -578,6 +579,7 @@ curl --location --request DELETE 'https://api-wanted-internship.hyoj.me/api/v1/p
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer xxxx'
 ```
+<br></br>
 
 ## 7-8. 에러 정의
 |에러 코드|에러 이름|상태 코드|에러 설명|
