@@ -2,13 +2,13 @@ spring.config.activate.on-profiles: database
 
 spring:
   datasource:
-    url: jdbc:mysql://wanted_internship_mysql:3306/wanted_internship?useUnicode=yes&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://${DB_HOST:wanted_internship_mysql}:3306/wanted_internship?useUnicode=yes&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: ${DB_USERNAME}
+    username: ${DB_USERNAME:root}
     password: ${DB_PASSWORD}
 
   flyway:
     enabled: true
     baseline-on-migrate: true
-    user: ${DB_USERNAME}
+    user: ${DB_USERNAME:root}
     password: ${DB_PASSWORD}
