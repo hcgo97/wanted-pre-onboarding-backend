@@ -91,6 +91,7 @@ CREATE TABLE posts
 <br></br>
 
 ## 7. API 명세
+- [Postman Collection 다운로드](https://drive.google.com/file/d/1CvQqLTsTyZfUx_cS1Loe7IF9dOIuITK2/view?usp=drive_link)
 ## 7-1. 회원가입 API
 **URL**
   - `/api/v1/users/join`
