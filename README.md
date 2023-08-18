@@ -17,7 +17,7 @@
 
 ## 2-2. Endpoint
 - 로컬: http://127.0.0.1:8080
-- 상용: https://api-wanted-internship.hyoj.me
+- 상용: https://api-wanted-internship.hyoj.me -> **(2023.08.19 ec2 비용 문제로 down 상태)**
   <br></br>
 
 ## 3. 애플리케이션 실행 방법
@@ -130,7 +130,7 @@ CREATE TABLE posts
 
 ## 6-3. 게시글(Posts)
 ### 1. `Users`와 `Posts` Entity 간의 One-to-Many 관계 설정
-- 게시글은 한 사용자에 의해 작성되며, 사용자는 여러 개의 게시글을 작성할 수 있기에 `Users`와 `Posts` 사이에 다대일(One-to-Many) 관계를 설정하였습니다.
+- 게시글은 한 사용자에 의해 작성되며, 사용자는 여러 개의 게시글을 작성할 수 있기에 `Users`와 `Posts` 사이에 일대다(One-to-Many) 관계를 설정하였습니다.
 - Lazy 로딩을 활용하여 `Posts` 테이블 조회 시 `Users` 테이블 정보는 필요 시에만 가져오도록 구성하였습니다.
 ### 2. 사용자 로그인 상태 확인
 - Request Header의 액세스 토큰 유무를 검사하고, 액세스 토큰이 없는 경우 '`E4010, 로그인 정보를 찾을 수 없습니다.`' 응답을 반환합니다.
@@ -224,8 +224,8 @@ curl --location 'https://api-wanted-internship.hyoj.me/api/v1/users/join' \
 - `data`: 응답 데이터 객체, object
     - `accessToken`: 유저 액세스 토큰, string
     - `userInfo`: 유저 정보 객체, object
-        - `id`: 생성된 유저 PK, long
-        - `email`: 생성된 유저 이메일, string
+        - `id`: 로그인한 유저 PK, long
+        - `email`: 로그인한 유저 이메일, string
 
 ### Example
 - **Request Body**
@@ -503,7 +503,7 @@ curl --location 'https://api-wanted-internship.hyoj.me/api/v1/posts/72' \
 ```json
 {
     "txid": "bd8ba5a6-bb13-4329-9edf-f45a15da1554",
-    "status": 201,
+    "status": 200,
     "message": "정상적으로 처리되었습니다.",
     "data": {
         "id": 72,
@@ -560,7 +560,7 @@ curl --location --request PUT 'https://api-wanted-internship.hyoj.me/api/v1/post
 ```json
 {
     "txid": "bd8ba5a6-bb13-4329-9edf-f45a15da1554",
-    "status": 201,
+    "status": 200,
     "message": "정상적으로 처리되었습니다.",
     "data": {
         "id": 72,
@@ -589,6 +589,7 @@ curl --location --request DELETE 'https://api-wanted-internship.hyoj.me/api/v1/p
 |E4011|TOKEN_NOT_FOUND|401|토큰을 찾을 수 없음|
 |E4012|TOKEN_INVALID|401|유효하지 않은 토큰|
 |E4013|TOKEN_DATE_EXPIRED|401|토큰이 만료됨|
+|**E4014**|**LOGIN_FAILED**|**401**|**로그인 정보가 잘못됨**|
 |E4030|FORBIDDEN|403|권한 없음|
 |**E4031**|**NOT_MY_POST**|**403**|**해당 게시글에 대한 작업 권한 없음**|
 |E4040|NOT_FOUND|404|존재하지 않는 데이터 또는 경로|
@@ -627,7 +628,7 @@ curl --location --request DELETE 'https://api-wanted-internship.hyoj.me/api/v1/p
 ### Endpoint: https://api-wanted-internship.hyoj.me
 ![김효정-AWS구조](https://github.com/hcgo97/wanted-pre-onboarding-backend/assets/72455719/8c9aabcc-714f-4f56-8b70-957c8e602303)
 - EC2 인스턴스 상에서 Docker Compose를 활용하여 API 서버와 MySQL 컨테이너를 실행시켰습니다.
-- EC2 인스턴스가 종료 후 재시작하여도 서버 IP가 변경되지 않도록 하기 위해 Elastic IP를 활용하여 서버 IP를 고정하였습니다.
+- EC2 인스턴스를 종료시킨 후 재시작하여도 서버 IP가 변경되지 않도록 하기 위해 Elastic IP를 활용하여 서버 IP를 고정하였습니다.
 - Cloudflare DNS 를 사용하여 개인 도메인 `hyoj.me` 에 EC2 인스턴스 주소를 연결하였습니다.
 - Certbot 을 활용하여 SSL 인증서를 발급받고, 이를 Nginx 에 적용하여 https 요청이 가능하도록 하였습니다.
 - 보안을 강화하기 위해 EC2 인스턴스의 인바운드 포트는 `80` 과 `443` 만 허용하였으며, Nginx 를 사용하여 API 서버 포트 `8080` 에 연결되도록 하였습니다.
